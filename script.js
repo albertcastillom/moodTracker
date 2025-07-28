@@ -1,3 +1,4 @@
+
 // display the current date and time 
 window.onload = function() 
 {
@@ -27,3 +28,8 @@ input.addEventListener('input', () =>
         bar.style.width = (value * 10) + '%';
     });
         
+
+function goBack(){
+            window.location.href = 'feelingSlides.html';
+        }
+
