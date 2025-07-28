@@ -1,0 +1,76 @@
+/* Hide inactive slides */
+.slide {
+  display: none;
+}
+
+/* Show active slide */
+.active {
+  display: block;
+}
+
+/* Centered container with soft styling */
+.slide-container {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Headings */
+.slide h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+/* Scale group (range + label + output) */
+.scale-group {
+  margin-bottom: 20px;
+}
+
+/* Range slider style */
+input[type="range"] {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* Output number */
+output {
+  display: inline-block;
+  margin-left: 10px;
+  font-weight: bold;
+  color: #0077cc;
+}
+
+/* Buttons */
+.slides-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.slides-btn:hover {
+  background-color: #005fa3;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .slide-container {
+    padding: 20px;
+    margin: 20px;
+  }
+
+  .slides-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
