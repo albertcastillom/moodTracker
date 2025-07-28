@@ -1,0 +1,65 @@
+body 
+{
+    background-color: lightgray; 
+
+}
+
+h1
+{
+    color: black;
+    font-family: "arial", sans-serif;
+    text-align: center;
+    font-size: 4.0em;
+}
+
+h2
+{
+    color: black;
+    text-align: center;
+    font-size: 1.5em;
+    font-family: "helvetica neue", sans-serif;
+}
+
+#datetime 
+{
+    color: black;
+    font-size: 1.2em;
+    text-align: center;
+    font-family: "brushscript mt", cursive;
+}
+
+#bar-container
+{
+    width: 100%;
+    max-width: 300px;
+    height: 30px;
+    background-color: gray;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+    text-align: center ;
+    
+}
+
+#bar
+{
+    height: 100%;
+    width: 0%;
+    background-color: black;
+    transition: width 0.3s;
+}
+
+#label
+{
+    text-align: center;
+    font-family: "arial", sans-serif;
+    color: black;
+    font-size: 1.2em;
+}
+
+#userInput
+{
+    text-align: center;
+    font-family: "arial", sans-serif;
+    color: black;
+    font-size: 1.2em;
+}
