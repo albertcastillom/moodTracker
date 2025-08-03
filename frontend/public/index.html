@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
     <title>Mood Tracker</title>
 </head>
 <body>
@@ -22,12 +21,15 @@
     <div id = "bar-container">
      <div id = "bar"> </div>
     </div>
-
-
-
-     <script src="script.js"></script>
-    
      <button class="slides-btn" onclick="goBack()">How are you feeling today?</button>
-    <script src="script.js"></script>
+
+      <div class="container">
+    <h1>How are you feeling today?</h1>
+    <input type="range" id="rangeRating" min="1" max="10" value="5" oninput="updateOutput(this.value)">
+    <output id="ratingValue">5</output>
+    <button onclick="submitRating()">Submit</button>
+    <h2 id="averageDisplay">Average Rating: --</h2>
+  </div>
+
 </body>
 </html>
