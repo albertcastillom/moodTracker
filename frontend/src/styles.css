@@ -16,6 +16,10 @@ body
      background-attachment: fixed;
 }
 
+/*
+Gradient Animation
+Shows positioning for each peak 
+*/
 
 @keyframes gradient {
     0% {
@@ -29,6 +33,9 @@ body
     }
 }
 
+/* Wave animation
+Fixed position for movement of wave motion 
+*/
 .wave {
     background: rgb(255 255 255 / 25%);
     border-radius: 1000% 1000% 0 0;
@@ -82,7 +89,7 @@ body
 h1
 {
     color: black;
-    font-family: "arial", sans-serif;
+    font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
     text-align: center;
     font-size: 4.0em;
 }
@@ -92,7 +99,7 @@ h2
     color: black;
     text-align: center;
     font-size: 1.5em;
-    font-family: "helvetica neue", sans-serif;
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
 }
 
 #datetime 
