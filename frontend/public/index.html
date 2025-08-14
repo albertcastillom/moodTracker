@@ -7,9 +7,16 @@
 </head>
 <body>
 
+  
+  <div>
+    <div class="wave"></div>
+    <div class="wave"></div>
+    <div class="wave"></div>
+  </div>
+
     <div class="navbar"></div>
    
-
+    
     <h1> Mood Tracker </h1>
     <h2> The current mood on </h2>
 
@@ -17,10 +24,23 @@
 
     <button class="slides-btn" onclick="goSlides()">How are you feeling today?</button>
 
+<<<<<<< HEAD
+=======
+    <label id = "label" for = "userInput"> How are you feeling today? </label>
+
+    <input type ="number" id = "userInput" min = "1" max = "10" value = "1"/>
+
+    <div id = "bar-container">
+     <div id = "bar"> </div>
+    </div>
+     <button class="slides-btn" onclick="goBack()">How are you feeling today?</button>
+
+>>>>>>> 43fa5c54864d676863be2f1ab0a4354b8cbee587
     <div class="container">
     <h1>How are you feeling today?</h1>
     <input type="range" id="rangeRating" min="1" max="10" value="5" oninput="updateOutput(this.value)">
     <output id="ratingValue">5</output>
+
     <button onclick="submitRating()">Submit</button>
     <h2 id="averageDisplay">Average Rating: --</h2>
   </div>
