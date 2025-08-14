@@ -22,6 +22,10 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './frontend/public/index.html',
     }),
+     new HtmlWebpackPlugin({
+      template: './frontend/public/feelingSlides.html',
+      filename: 'feelingSlides.html', // <-- this emits /feelingSlides.html
+    }),
   ],
   module: {
     rules: [

@@ -1,55 +1,109 @@
 import './styles.css';
-/*
+
+// ============ Helpers ============
+const $ = (id) => document.getElementById(id);
+
+// ============ UI Updaters ============
 function updateOutput(val) {
-  document.getElementById('ratingValue').textContent = val;
+  const el = $('ratingValue');
+  if (el) el.textContent = val;
 }
 
-function submitRating() {
-  const rating = parseInt(document.getElementById('rangeRating').value);
-  fetch('/submit', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ rating })
-  })
-    .then(res => res.json())
-    .then(() => {
-      loadAverage();
+// ============ API ============
+async function loadAverage() {
+  const averageEl = $('averageDisplay');
+  if (!averageEl) return;
+
+  try {
+    const res = await fetch('/average');
+    if (!res.ok) throw new Error('Average fetch failed');
+    const data = await res.json();
+    averageEl.textContent = `Average Rating: ${Number(data.average ?? 0).toFixed(2)}`;
+  } catch (err) {
+    console.error(err);
+    averageEl.textContent = 'Average Rating: --';
+  }
+}
+
+async function submitRating() {
+  const ratingEl = $('rangeRating');
+  if (!ratingEl) return;
+
+  const rating = Number(ratingEl.value);
+  try {
+    const res = await fetch('/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rating }),
     });
+    if (!res.ok) throw new Error('Submit failed');
+    await loadAverage();
+  } catch (err) {
+    console.error(err);
+  }
 }
 
-function loadAverage() {
-  fetch('/average')
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById('averageDisplay').textContent =
-        `Average Rating: ${data.average.toFixed(2)}`;
-    });
-}
-
+// ============ Navigation & Slides ============
 function goBack() {
+  window.location.href = 'index.html';
+}
+function goSlides() {
   window.location.href = 'feelingSlides.html';
 }
+function nextSlide(current) {
+  const cur = $(`slide-${current}`);
+  const next = $(`slide-${current + 1}`);
+  if (cur) cur.classList.remove('active');
+  if (next) next.classList.add('active');
+}
 
-window.onload = function () {
-  loadAverage();
+// Expose only if you use inline onclick=""
+window.goBack = goBack;
+window.goSlides = goSlides;
+window.submitRating = submitRating;   // add this so onclick works
+window.updateOutput = updateOutput;  
+// window.nextSlide = nextSlide; // uncomment if needed by inline HTML
 
-  setInterval(() => {
-    const date = new Date();
-    const displayDate = date.toLocaleDateString();
-    const displayTime = date.toLocaleTimeString();
-    document.getElementById('datetime').innerHTML = displayDate + " " + displayTime;
-  }, 1000);
+// ============ Wire-up ============
+window.addEventListener('DOMContentLoaded', () => {
+  // Average
+  if ($('averageDisplay')) loadAverage();
 
-  const input = document.getElementById('userInput');
-  const bar = document.getElementById('bar');
-  const display = document.getElementById('value-display');
+  // Clock
+  const datetimeEl = $('datetime');
+  if (datetimeEl) {
+    const tick = () => {
+      const now = new Date();
+      datetimeEl.textContent = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+    };
+    tick(); // set immediately
+    setInterval(tick, 1000);
+  }
 
-  input.addEventListener('input', () => {
-    let value = parseInt(input.value, 10);
-    if (isNaN(value) || value < 1) value = 1;
-    if (value > 10) value = 10;
-    bar.style.width = (value * 10) + '%';
-    display.textContent = value;
-  });
-};
-*/
+  // Slider readout
+  const ratingEl = $('rangeRating');
+  if (ratingEl) {
+    updateOutput(ratingEl.value); // set initial readout
+    ratingEl.addEventListener('input', (e) => updateOutput(e.target.value));
+  }
+
+  // Submit
+  const submitBtn = $('submitButton');
+  if (submitBtn) submitBtn.addEventListener('click', submitRating);
+
+  // Bar visual (1..10)
+  const input = $('userInput');
+  const bar = $('bar');
+  const display = $('value-display');
+  if (input && bar && display) {
+    const clampAndRender = () => {
+      let value = Number(input.value);
+      if (!Number.isFinite(value) || value < 1) value = 1;
+      if (value > 10) value = 10;
+      bar.style.width = `${value * 10}%`;
+      display.textContent = value;
+    };
+    clampAndRender(); // set initial
+    input.addEventListener('input', clampAndRender);
+  }
+});
