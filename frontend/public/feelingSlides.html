@@ -9,12 +9,14 @@
     <div class="slide-container">
         <div class="slide active" id="slide-1">
             <div class="scale-group">
-                <label for="rangeRating">How are you feeling today? (1–10):</label><br>
-                <input type="range" id="rangeRating" name="rangeRating" min="1" max="10" step="1" value="5"
-                    oninput="rangeOutput.value = this.value">
-                <output id="rangeOutput">5</output>
+            
+                 <h1>How are you feeling today?</h1>
+                <output id="ratingValue">5</output>
+                 <input type="range" id="rangeRating" min="1" max="10" value="5" oninput="updateOutput(this.value)">
+                <button  id="rating-submit-btn" class="rating-submit-btn" >Submit</button>
+
+                <button class="slides-btn" onclick="nextSlide(1)">Next</button>
             </div>
-            <button class="slides-btn" onclick="nextSlide(1)">Next</button>
         </div>
         <div class="slide" id="slide-2">
             <h2>Daily goals</h1>

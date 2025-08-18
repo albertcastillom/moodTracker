@@ -194,7 +194,7 @@ output {
 
 /* Buttons */
 .slides-btn {
-  display: inline-block;
+  display: block;
   padding: 10px 20px;
   background-color: #0077cc;
   color: white;
@@ -203,8 +203,30 @@ output {
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.25s ease;
+  margin: auto;
 }
 
+.rating-submit-btn {
+  display: block;
+  padding: 10px 20px;
+  background-color: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+  margin: auto;
+  margin-bottom: 10px;
+}
+
+.rating-submit-btn.clicked {
+  background-color: #005fa3; /* new color after clicked */
+}
+
+.rating-submit-btn:hover{
+  background-color: #005fa3;
+}
 .slides-btn:hover {
   background-color: #005fa3;
 }

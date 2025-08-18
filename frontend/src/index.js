@@ -25,7 +25,7 @@ async function loadAverage() {
   }
 }
 
-async function submitRating() {
+async function submitRating() { 
   const ratingEl = $('rangeRating');
   if (!ratingEl) return;
 
@@ -38,6 +38,10 @@ async function submitRating() {
     });
     if (!res.ok) throw new Error('Submit failed');
     await loadAverage();
+
+    $('rating-submit-btn')?.classList.add('clicked');
+     setTimeout(() =>  $('rating-submit-btn')?.classList.remove('clicked'), 2000);
+
   } catch (err) {
     console.error(err);
   }
@@ -57,12 +61,11 @@ function nextSlide(current) {
   if (next) next.classList.add('active');
 }
 
-// Expose only if you use inline onclick=""
 window.goBack = goBack;
 window.goSlides = goSlides;
-window.submitRating = submitRating;   // add this so onclick works
+window.submitRating = submitRating;  
 window.updateOutput = updateOutput;  
-// window.nextSlide = nextSlide; // uncomment if needed by inline HTML
+window.nextSlide = nextSlide; 
 
 // ============ Wire-up ============
 window.addEventListener('DOMContentLoaded', () => {
@@ -88,8 +91,10 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   // Submit
-  const submitBtn = $('submitButton');
-  if (submitBtn) submitBtn.addEventListener('click', submitRating);
+  const submitBtn = $('rating-submit-btn');
+  if (submitBtn)  submitBtn.addEventListener('click', submitRating);
+    
+
 
   // Bar visual (1..10)
   const input = $('userInput');
@@ -103,7 +108,7 @@ window.addEventListener('DOMContentLoaded', () => {
       bar.style.width = `${value * 10}%`;
       display.textContent = value;
     };
-    clampAndRender(); // set initial
+    clampAndRender(); 
     input.addEventListener('input', clampAndRender);
   }
 });
