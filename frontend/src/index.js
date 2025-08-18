@@ -163,3 +163,4 @@ function getCity(coords)
     }
 }
 getCoordinates(); // Call the function to get user's location
+
