@@ -107,3 +107,54 @@ window.addEventListener('DOMContentLoaded', () => {
     input.addEventListener('input', clampAndRender);
   }
 });
+
+// ============ Users Location ============
+function getCoordinates() 
+{
+  var options = 
+  {
+    enableHighAccuracy: true,
+    timeout: 5000,
+    maximumAge: 0
+  };
+
+  function success(pos)
+  {
+    var crd = pos.coords; 
+    var lat = crd.latitude.toString(); 
+    var long = crd.longitude.toString();
+    var coords = [lat, long];
+    console.log(`Latitude: ${lat}, Longitude: ${long}`);
+    getCity(coords);
+    return; 
+  }
+
+  function error(err) 
+  {
+    console.warn(`ERROR(${err.code}): ${err.message}`);
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(success, error, options);
+}
+
+function getCity(coords) 
+{
+   var xhr = new XMLHttpRequest();
+   var lat = coords[0];
+   var long = coords[1]; 
+   xhr.open('GET', `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${long}&format=json`, true);
+   xhr.send();
+   xhr.onreadystatechange = processRequest; 
+   xhr.addEventListener("readystatechange", processRequest, false);
+    function processRequest(e)
+    {
+      if(xhr.readyState == 4 && xhr.status == 200)
+      {
+        var response = JSON.parse(xhr.responseText); 
+        var city = response.address.city; 
+        console.log(city);
+        return; 
+      }
+    }
+}
+getCoordinates(); // Call the function to get user's location
