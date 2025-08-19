@@ -149,14 +149,15 @@ function getCity(coords)
    var long = coords[1]; 
    xhr.open('GET', `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${long}&format=json`, true);
    xhr.send();
-   xhr.onreadystatechange = processRequest; 
+   //xhr.onreadystatechange = processRequest; 
    xhr.addEventListener("readystatechange", processRequest, false);
     function processRequest(e)
     {
       if(xhr.readyState == 4 && xhr.status == 200)
       {
         var response = JSON.parse(xhr.responseText); 
-        var city = response.address.city; 
+        console.log(response);
+        var city = response.address.town;
         console.log(city);
         return; 
       }
