@@ -158,6 +158,7 @@ function getCity(coords)
         var response = JSON.parse(xhr.responseText); 
         var city = response.address.city; 
         console.log(city);
+        console.log(response); 
         return; 
       }
     }
