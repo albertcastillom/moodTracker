@@ -159,6 +159,7 @@ function getCity(coords)
         console.log(response);
         var city = response.address.town;
         console.log(city);
+        console.log(response); 
         return; 
       }
     }
