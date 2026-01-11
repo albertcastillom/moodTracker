@@ -1,34 +1,37 @@
 const { Router } = require("express");
-const mood = Router();
+const moodModel = require("../models/mood");
 
-mood.get("/", (req, res) => {
-  res.send("Welcome to the Mood Tracker API");
+const router = Router();
+
+// optional: welcome
+router.get("/", (req, res) => {
+  res.json({ message: "Moods API" });
 });
 
 // Get average rating
-mood.get("/average", (req, res) => {
-  if (!fs.existsSync(DATA_FILE)) return res.send({ average: 0 });
-
-  const data = JSON.parse(fs.readFileSync(DATA_FILE));
-  const average = data.reduce((sum, r) => sum + r, 0) / data.length;
-  res.send({ average });
+router.get("/average", (req, res, next) => {
+  try {
+    const average = moodModel.getAverage();
+    res.json({ average });
+  } catch (e) {
+    next(e);
+  }
 });
 
 // Submit a new rating
-mood.post("/submit", (req, res) => {
-  const rating = req.body.rating;
-  if (typeof rating !== "number" || rating < 1 || rating > 10) {
-    return res.status(400).send({ error: "Invalid rating" });
-  }
+router.post("/submit", (req, res, next) => {
+  try {
+    const rating = Number(req.body.rating);
 
-  let data = [];
-  if (fs.existsSync(DATA_FILE)) {
-    data = JSON.parse(fs.readFileSync(DATA_FILE));
-  }
+    if (!Number.isFinite(rating) || rating < 1 || rating > 10) {
+      return res.status(400).json({ error: "Invalid rating" });
+    }
 
-  data.push(rating);
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data));
-  res.send({ success: true });
+    moodModel.addRating(rating);
+    res.status(201).json({ success: true });
+  } catch (e) {
+    next(e);
+  }
 });
 
-module.exports = mood;
+module.exports = router;

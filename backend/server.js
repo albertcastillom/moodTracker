@@ -1,23 +1,28 @@
 const express = require("express");
-const fs = require("fs");
-const path = require("path");
 const cors = require("cors");
-
 const moodRouter = require("./routes/mood");
 
 const app = express();
 const PORT = 3000;
 
-const DATA_FILE = path.join(__dirname, "results.json");
-
-app.use(cors());
+app.use(cors({ origin: "http://localhost:8080" }));
 app.use(express.json());
 
-app.use("/", moodRouter);
+//health check
+app.get("/api/health", (req, res) => res.json({ ok: "true" }));
 
+//api routes
+app.use("/api/moods", moodRouter);
+
+// API 404
+app.use("/api", (req, res) =>
+  res.status(404).json({ error: "API route not found" })
+);
+
+// Error handler (return JSON)
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send("Something broke!");
+  console.error(err);
+  res.status(err.status || 500).json({ error: err.message || "Server error" });
 });
 
 app.listen(PORT, () => {
