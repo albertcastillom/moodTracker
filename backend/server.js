@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const moodRouter = require("./routes/mood");
+const habitRouter = require("./routes/habits");
 
 const app = express();
 const PORT = 3000;
@@ -9,14 +10,15 @@ app.use(cors({ origin: "http://localhost:8080" }));
 app.use(express.json());
 
 //health check
-app.get("/api/health", (req, res) => res.json({ ok: "true" }));
+app.get("/api/health", (req, res) => res.json({ ok: true }));
 
 //api routes
 app.use("/api/moods", moodRouter);
+app.use("/api/habits", habitRouter);
 
 // API 404
 app.use("/api", (req, res) =>
-  res.status(404).json({ error: "API route not found" })
+  res.status(404).json({ error: "API route not found" }),
 );
 
 // Error handler (return JSON)

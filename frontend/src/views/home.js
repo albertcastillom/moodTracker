@@ -6,14 +6,10 @@ export async function homeView(outlet) {
   outlet.innerHTML = `
     <div>
       <h1>Mood Tracker</h1>
-      <h2>The current mood on</h2>
-      <p id="datetime"></p>
-
+      <h2>The current mood on</h2> 
+      <p id="datetime"></p> 
       <h2>In</h2>
       <p id="location">--</p>
-
-      <button id="goSlidesBtn" class="slides-btn">How are you feeling today?</button>
-
       <h2 id="averageDisplay">Average Rating: --</h2>
 
       <div style="margin-top: 16px;">
@@ -22,6 +18,7 @@ export async function homeView(outlet) {
         <span id="ratingValue">5</span>
         <button id="rating-submit-btn">Save mood</button>
       </div>
+      <a href="/habits" data-link id="goHabitsBtn">Habits</a>
     </div>
   `;
 
@@ -32,9 +29,9 @@ export async function homeView(outlet) {
   loadAverage();
 
   // navigation handled by router, but we can programmatically go:
-  document.getElementById("goSlidesBtn")?.addEventListener("click", () => {
+  document.getElementById("goHabitsBtn")?.addEventListener("click", () => {
     // use regular navigation so router catches it:
-    window.history.pushState({}, "", "/slides");
+    window.history.pushState({}, "", "/habits");
     window.dispatchEvent(new PopStateEvent("popstate"));
   });
 }

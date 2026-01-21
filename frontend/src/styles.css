@@ -96,7 +96,7 @@ h1
 
 h2
 {
-    color: black;
+    color: rgb(0, 0, 0);
     text-align: center;
     font-size: 1.5em;
     font-family: "Comic Sans MS", "Comic Sans", cursive;
@@ -146,16 +146,6 @@ h2
     font-size: 1.2em;
 }
 
-/* Hide inactive slides */
-.slide {
-  display: none;
-}
-
-/* Show active slide */
-.active {
-  display: block;
-}
-
 /* Centered container with soft styling */
 .slide-container {
   max-width: 500px;
@@ -193,20 +183,8 @@ output {
 }
 
 /* Buttons */
-.slides-btn {
-  display: block;
-  padding: 10px 20px;
-  background-color: #0077cc;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.25s ease;
-  margin: auto;
-}
 
-.rating-submit-btn {
+#rating-submit-btn {
   display: block;
   padding: 10px 20px;
   background-color: #0077cc;
@@ -220,28 +198,10 @@ output {
   margin-bottom: 10px;
 }
 
-.rating-submit-btn.clicked {
-  background-color: #005fa3; /* new color after clicked */
+#rating-submit-btn:hover{
+  color: #0c0c0c;
 }
 
-.rating-submit-btn:hover{
-  background-color: #005fa3;
-}
-.slides-btn:hover {
-  background-color: #005fa3;
-}
 
-/* Responsive */
-@media (max-width: 600px) {
-  .slide-container {
-    padding: 20px;
-    margin: 20px;
-  }
-
-  .slides-btn {
-    width: 100%;
-    text-align: center;
-  }
-}
 
 

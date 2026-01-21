@@ -4,6 +4,7 @@ export async function journalView(outlet) {
       <h1>Journal</h1>
       <p>Coming soon.</p>
       <a href="/" data-link>← Back</a>
+      <a href="/" data-link>Home</a>
     </div>
   `;
 }
