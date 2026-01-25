@@ -67,3 +67,16 @@ export function toggleHabitDone(habitId, completed) {
     body: JSON.stringify({ completed }),
   });
 }
+
+/////api for journal entries
+export function getJournalEntries() {
+  return jsonFetch(`${API_BASE}/journal`);
+}
+
+export function createJournalEntry(entry) {
+  return jsonFetch(`${API_BASE}/journal`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(entry),
+  });
+}

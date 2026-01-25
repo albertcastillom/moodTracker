@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const moodRouter = require("./routes/mood");
 const habitRouter = require("./routes/habits");
+const journalRouter = require("./routes/journal");
 
 const app = express();
 const PORT = 3000;
@@ -15,6 +16,7 @@ app.get("/api/health", (req, res) => res.json({ ok: true }));
 //api routes
 app.use("/api/moods", moodRouter);
 app.use("/api/habits", habitRouter);
+app.use("/api/journal", journalRouter);
 
 // API 404
 app.use("/api", (req, res) =>
