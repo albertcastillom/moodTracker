@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const HabitsModel = require("../models/habits");
+const HabitsModel = require("../models/habitsModel");
 
 const router = Router();
 
@@ -34,19 +34,20 @@ router.post("/", (req, res, next) => {
   }
 });
 
-router.post("/habits/:id/logs", (req, res, next) => {
+router.post("/:id/logs", (req, res, next) => {
   try {
     const { id } = req.params;
-    const { done } = req.body; // boolean
+    const { completed } = req.body; // boolean
 
     const habits = HabitsModel.readHabits();
-    const habit = habits.find((h) => h.id === id);
+    const habit = habits.find((h) => String(h.id) === String(id));
     if (!habit) return res.status(404).json({ error: "Habit not found" });
 
     // simplest v1: store done flag on habit
-    habit.completed = !!done;
+    habit.completed = !!completed;
 
     HabitsModel.writeHabits(habits);
+
     res.json(habit);
   } catch (e) {
     next(e);

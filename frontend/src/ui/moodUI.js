@@ -14,7 +14,7 @@ export async function loadAverage() {
   try {
     const data = await fetchAverage();
     averageEl.textContent = `Average Rating: ${Number(
-      data.average ?? 0
+      data.average ?? 0,
     ).toFixed(2)}`;
   } catch (err) {
     console.error(err);

@@ -61,8 +61,8 @@ export function createHabit(habit) {
 }
 
 export function toggleHabitDone(habitId, completed) {
-  return jsonFetch(`${API_BASE}/habits/${encodeURIComponent(habitId)}`, {
-    method: "PATCH",
+  return jsonFetch(`${API_BASE}/habits/${encodeURIComponent(habitId)}/logs`, {
+    method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ completed }),
   });

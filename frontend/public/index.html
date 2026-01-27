@@ -6,21 +6,14 @@
     <title>Mood Tracker</title>
 </head>
 <body>
- 
-  <div>
-    <div class="wave"></div>
-    <div class="wave"></div>
-    <div class="wave"></div>
-  </div>
+  <div class="notebook">
+    <header class="notebook__tabs navbar">
+      <a href="/" data-link> Mood </a>
+      <a href="/habits" data-link> Habits </a>
+      <a href="/journal" data-link> Journal </a>
+    </header>
 
-    <nav class="navbar">
-      <a href="/" data-link>Home</a>
-      <a href="/habits" data-link>Habits</a>
-      <a href="/journal" data-link>Journal</a>
-    </nav>
-
-    <main id="app"></main>
-
+    <main id="app" class="notebook__page"></main>
   </div>
 </body>
 </html>

@@ -14,7 +14,7 @@ function readHabits() {
 }
 
 function writeHabits(habits) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(habits, null, 2));
+  fs.writeFileSync(DATA_FILE, JSON.stringify(habits, null, 2), "utf-8");
 }
 exports.readHabits = readHabits;
 exports.writeHabits = writeHabits;

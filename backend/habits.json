@@ -2,21 +2,26 @@
   {
     "id": "1768894689915",
     "name": "meditation",
-    "completed": false
+    "completed": true
   },
   {
     "id": "1768894689916",
     "name": "clean",
-    "completed": false
+    "completed": true
   },
   {
     "id": "1769374675198",
     "name": "code",
-    "completed": false
+    "completed": true
   },
   {
     "id": "1769376317515",
     "name": "cook",
-    "completed": false
+    "completed": true
+  },
+  {
+    "id": "1769496619535",
+    "name": "Walk 10 minutes",
+    "completed": true
   }
 ]

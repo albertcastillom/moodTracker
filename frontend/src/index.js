@@ -1,7 +1,7 @@
 import { createRouter } from "./router.js";
-import { homeView } from "./views/home.js";
-import { habitsView } from "./views/habits.js";
-import { journalView } from "./views/journal.js";
+import { homeView } from "./views/homeView.js";
+import { habitsView } from "./views/habitsView.js";
+import { journalView } from "./views/journalView.js";
 //import { notFoundView } from "./views/404.js"; // if you add it
 
 import "./styles.css";

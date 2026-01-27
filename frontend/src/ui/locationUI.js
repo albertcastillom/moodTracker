@@ -16,7 +16,7 @@ export function wireLocation() {
       try {
         // Prefer fetch over XHR
         const url = `https://nominatim.openstreetmap.org/reverse?lat=${encodeURIComponent(
-          lat
+          lat,
         )}&lon=${encodeURIComponent(lon)}&format=json`;
 
         const res = await fetch(url, {
@@ -48,6 +48,6 @@ export function wireLocation() {
       console.warn(`ERROR(${err.code}): ${err.message}`);
       locationEl.textContent = "Location denied";
     },
-    options
+    options,
   );
 }

@@ -16,21 +16,26 @@ export function wireHabitsUI(outlet) {
   function render(habits) {
     list.innerHTML = "";
     habits.forEach((habit) => {
-      const li = document.createElement("li");
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "habit-card";
+      card.setAttribute("aria-pressed", String(!!habit.completed));
 
-      const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.checked = !!habit.doneToday;
-      cb.addEventListener("change", async () => {
-        await toggleHabitDone(habit.id, cb.checked);
+      const title = document.createElement("div");
+      title.className = "habit-card__title";
+      title.textContent = habit.name;
+
+      const meta = document.createElement("div");
+      meta.className = "habit-card__meta";
+      meta.textContent = habit.completed ? "Done today" : "Not done";
+
+      card.addEventListener("click", async () => {
+        await toggleHabitDone(habit.id, !habit.completed);
         await refreshHabits();
       });
-      const span = document.createElement("span");
-      span.textContent = habit.name;
 
-      li.appendChild(cb);
-      li.appendChild(span);
-      list.appendChild(li);
+      card.append(title, meta);
+      list.appendChild(card);
     });
   }
 
