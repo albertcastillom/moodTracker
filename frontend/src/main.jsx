@@ -27,6 +27,14 @@ function formatDate(value) {
   });
 }
 
+function formatLongDate(value = new Date()) {
+  return value.toLocaleDateString(undefined, {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+}
+
 function App() {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -60,6 +68,7 @@ function Shell({ loading = false, user, page, setPage, onLogout }) {
     journal: <JournalScreen />,
     settings: <SettingsScreen user={user} onLogout={onLogout} />,
   };
+  const currentDate = formatLongDate();
 
   return (
     <main className="app-shell">
@@ -67,6 +76,7 @@ function Shell({ loading = false, user, page, setPage, onLogout }) {
         <div>
           <p className="eyebrow">Wellness check-in</p>
           <h1>Mood Tracker</h1>
+          <p className="sidebar-date">{currentDate}</p>
         </div>
         <nav className="nav-tabs" aria-label="Primary">
           {Object.keys(views).map((key) => (
@@ -120,7 +130,7 @@ function AuthScreen({ onAuthed }) {
         <p className="eyebrow">Mood Tracker</p>
         <h1>Check in with yourself, and remember you are not alone.</h1>
         <p>
-          Track your mood, keep private journal notes, and see how your city is
+          Track your mood, keep private journal notes, and see how your state is
           feeling in a privacy-aware way.
         </p>
       </section>
@@ -158,7 +168,7 @@ function AuthScreen({ onAuthed }) {
 
 function HomeScreen({ user, setPage }) {
   const [location, setLocation] = useState({ city: "", region: "", country: "" });
-  const [manualCity, setManualCity] = useState("");
+  const [manualRegion, setManualRegion] = useState("");
   const [mood, setMood] = useState(null);
   const [rating, setRating] = useState(5);
   const [note, setNote] = useState("");
@@ -167,7 +177,19 @@ function HomeScreen({ user, setPage }) {
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
 
-  const city = location.city || manualCity.trim();
+  const region = location.region || manualRegion.trim();
+  const city = location.city || region;
+  const ratingPercent = ((rating - 1) / 9) * 100;
+
+  function openHabitsPage() {
+    setPage("habits");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function loadTodayHabits() {
+    const data = await apiFetch("/habits/today");
+    setHabits(data.habits.slice(0, 4));
+  }
 
   useEffect(() => {
     apiFetch("/moods/today")
@@ -181,23 +203,41 @@ function HomeScreen({ user, setPage }) {
       })
       .catch((err) => setError(err.message));
 
-    apiFetch("/habits/today")
-      .then(({ habits }) => setHabits(habits.slice(0, 4)))
+    loadTodayHabits()
       .catch(() => setHabits([]));
   }, []);
 
   useEffect(() => {
     inferCity().then((nextLocation) => {
-      if (nextLocation?.city) setLocation(nextLocation);
+      if (nextLocation?.region) setLocation(nextLocation);
     });
   }, []);
 
   useEffect(() => {
-    if (!city) return;
-    apiFetch(`/moods/city-average?city=${encodeURIComponent(city)}`)
+    if (!region) return;
+    const params = new URLSearchParams({ region });
+    if (location.country) params.set("country", location.country);
+    apiFetch(`/moods/region-average?${params.toString()}`)
       .then(setAverage)
       .catch(() => setAverage(null));
-  }, [city]);
+  }, [region, location.country]);
+
+  async function toggleHomeHabit(habit) {
+    setError("");
+    try {
+      if (habit.completed) {
+        await apiFetch(`/habits/${habit.id}/completions/${todayKey()}`, { method: "DELETE" });
+      } else {
+        await apiFetch(`/habits/${habit.id}/completions`, {
+          method: "POST",
+          body: JSON.stringify({ date: todayKey() }),
+        });
+      }
+      await loadTodayHabits();
+    } catch (err) {
+      setError(err.message);
+    }
+  }
 
   async function submitMood(e) {
     e.preventDefault();
@@ -208,7 +248,7 @@ function HomeScreen({ user, setPage }) {
         rating,
         note,
         city,
-        region: location.region,
+        region,
         country: location.country,
       };
       const { mood } = await apiFetch("/moods/today", {
@@ -217,7 +257,9 @@ function HomeScreen({ user, setPage }) {
       });
       setMood(mood);
       setStatus("Mood saved for today.");
-      const avg = await apiFetch(`/moods/city-average?city=${encodeURIComponent(city)}`);
+      const params = new URLSearchParams({ region });
+      if (location.country) params.set("country", location.country);
+      const avg = await apiFetch(`/moods/region-average?${params.toString()}`);
       setAverage(avg);
     } catch (err) {
       setError(err.message);
@@ -231,12 +273,25 @@ function HomeScreen({ user, setPage }) {
         <h2>How are you feeling today?</h2>
         <form onSubmit={submitMood} className="mood-form">
           <div className="mood-score">{rating}</div>
-          <input type="range" min="1" max="10" value={rating} onChange={(e) => setRating(Number(e.target.value))} />
+          <input
+            className="mood-range"
+            type="range"
+            min="1"
+            max="10"
+            value={rating}
+            style={{ "--range-progress": `${ratingPercent}%` }}
+            onChange={(e) => setRating(Number(e.target.value))}
+          />
           <textarea placeholder="Optional note for yourself" value={note} onChange={(e) => setNote(e.target.value)} />
-          {!location.city && (
-            <input placeholder="Enter your city" value={manualCity} onChange={(e) => setManualCity(e.target.value)} required />
+          {!location.region && (
+            <input
+              placeholder="Enter your state or region"
+              value={manualRegion}
+              onChange={(e) => setManualRegion(e.target.value)}
+              required
+            />
           )}
-          <button className="primary-btn" disabled={!city} type="submit">
+          <button className="primary-btn" disabled={!region} type="submit">
             {mood ? "Update today's mood" : "Save today's mood"}
           </button>
           <Status status={status} error={error} />
@@ -244,31 +299,40 @@ function HomeScreen({ user, setPage }) {
       </section>
 
       <section className="stat-card">
-        <p className="eyebrow">{city || "City average"}</p>
+        <p className="eyebrow">{region || "State average"}</p>
         <h3>{average?.count ? Number(average.average).toFixed(1) : "--"}</h3>
         <p>
           {average?.count
             ? `${average.count} check-in${average.count === 1 ? "" : "s"} over the last ${average.windowDays} days.`
-            : "Share your city to see how people nearby are feeling."}
+            : "Share your state to see how people nearby are feeling."}
         </p>
       </section>
 
       <section className="soft-card">
         <div className="card-heading">
           <h3>Today’s habits</h3>
-          <button type="button" onClick={() => setPage("habits")}>Manage</button>
         </div>
         {habits.length ? (
           <ul className="mini-list">
             {habits.map((habit) => (
               <li key={habit.id}>
-                <span>{habit.name}</span>
-                <strong>{habit.completed ? "Done" : "Open"}</strong>
+                <button
+                  className={habit.completed ? "todo-item completed" : "todo-item"}
+                  type="button"
+                  aria-pressed={habit.completed}
+                  onClick={() => toggleHomeHabit(habit)}
+                >
+                  <span className="todo-bullet" aria-hidden="true"></span>
+                  <span>{habit.name}</span>
+                  
+                </button>
               </li>
             ))}
           </ul>
         ) : (
-          <p>No habits yet. Create one to build your daily rhythm.</p>
+          <button className="empty-action" type="button" onClick={openHabitsPage}>
+            No habits yet. Create one to build your daily rhythm.
+          </button>
         )}
       </section>
 
@@ -482,7 +546,7 @@ function SettingsScreen({ user, onLogout }) {
       <p className="eyebrow">Profile</p>
       <h2>{user.displayName}</h2>
       <p>{user.email}</p>
-      <p className="muted">Mood averages use city-level location only. Coordinates are never sent to the API.</p>
+      <p className="muted">Mood averages use state-level location only. Coordinates are never sent to the API.</p>
       <button className="secondary-btn" type="button" onClick={logout}>Log out</button>
       <Status status={status} error={error} />
     </section>
