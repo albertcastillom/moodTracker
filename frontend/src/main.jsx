@@ -216,11 +216,10 @@ function HomeScreen({ user, setPage }) {
   useEffect(() => {
     if (!region) return;
     const params = new URLSearchParams({ region });
-    if (location.country) params.set("country", location.country);
     apiFetch(`/moods/region-average?${params.toString()}`)
       .then(setAverage)
       .catch(() => setAverage(null));
-  }, [region, location.country]);
+  }, [region]);
 
   async function toggleHomeHabit(habit) {
     setError("");
@@ -258,7 +257,6 @@ function HomeScreen({ user, setPage }) {
       setMood(mood);
       setStatus("Mood saved for today.");
       const params = new URLSearchParams({ region });
-      if (location.country) params.set("country", location.country);
       const avg = await apiFetch(`/moods/region-average?${params.toString()}`);
       setAverage(avg);
     } catch (err) {

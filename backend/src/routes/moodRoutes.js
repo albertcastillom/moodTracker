@@ -55,7 +55,6 @@ router.put("/today", async (req, res, next) => {
 router.get("/region-average", async (req, res, next) => {
   try {
     const region = String(req.query.region || "").trim();
-    const country = String(req.query.country || "").trim();
     if (!region) return res.status(400).json({ error: "State or region is required." });
 
     const since = new Date();
@@ -65,7 +64,6 @@ router.get("/region-average", async (req, res, next) => {
     const aggregate = await prisma.moodEntry.aggregate({
       where: {
         region: { equals: region, mode: "insensitive" },
-        ...(country ? { country: { equals: country, mode: "insensitive" } } : {}),
         entryDate: { gte: fromDate },
       },
       _avg: { rating: true },
@@ -74,7 +72,6 @@ router.get("/region-average", async (req, res, next) => {
 
     res.json({
       region,
-      country: country || null,
       average: aggregate._avg.rating,
       count: aggregate._count.rating,
       windowDays: 7,

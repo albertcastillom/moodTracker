@@ -36,6 +36,7 @@ model MoodEntry {
 
   @@unique([userId, entryDate])
   @@index([city, entryDate])
+  @@index([region, entryDate])
 }
 
 model Habit {
