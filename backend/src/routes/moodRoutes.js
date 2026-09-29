@@ -36,13 +36,26 @@ router.put("/today", async (req, res, next) => {
     const entryDate = toDateOnly();
 
     if (!Number.isInteger(rating) || rating < 1 || rating > 10) {
-      return res.status(400).json({ error: "Mood rating must be between 1 and 10." });
+      return res
+        .status(400)
+        .json({ error: "Mood rating must be between 1 and 10." });
     }
-    if (!region) return res.status(400).json({ error: "State or region is required for mood check-ins." });
+    if (!region)
+      return res
+        .status(400)
+        .json({ error: "State or region is required for mood check-ins." });
 
     const mood = await prisma.moodEntry.upsert({
       where: { userId_entryDate: { userId: req.user.id, entryDate } },
-      create: { userId: req.user.id, rating, note, city, region, country, entryDate },
+      create: {
+        userId: req.user.id,
+        rating,
+        note,
+        city,
+        region,
+        country,
+        entryDate,
+      },
       update: { rating, note, city, region, country },
     });
 
@@ -55,7 +68,8 @@ router.put("/today", async (req, res, next) => {
 router.get("/region-average", async (req, res, next) => {
   try {
     const region = String(req.query.region || "").trim();
-    if (!region) return res.status(400).json({ error: "State or region is required." });
+    if (!region)
+      return res.status(400).json({ error: "State or region is required." });
 
     const since = new Date();
     since.setUTCDate(since.getUTCDate() - 6);

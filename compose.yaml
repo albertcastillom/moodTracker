@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:16-bookworm
+    environment:
+      POSTGRES_USER: moodtracker
+      POSTGRES_PASSWORD: local-development-only
+      POSTGRES_DB: moodtracker
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U moodtracker -d moodtracker"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://moodtracker:local-development-only@db:5432/moodtracker?schema=public
+      JWT_SECRET: local-compose-secret
+      NODE_ENV: production
+    ports:
+      - "3001:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

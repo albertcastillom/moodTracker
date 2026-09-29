@@ -4,6 +4,7 @@ import "./styles.css";
 
 const API_BASE = "/api";
 
+//api fetch helper
 async function apiFetch(path, options = {}) {
   const res = await fetch(`${API_BASE}${path}`, {
     credentials: "include",
@@ -35,11 +36,13 @@ function formatLongDate(value = new Date()) {
   });
 }
 
+//main app flow
 function App() {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [page, setPage] = useState("home");
 
+  //auth user, first check if im logged in, if not render login page, if logged in render home page
   useEffect(() => {
     apiFetch("/auth/me")
       .then(({ user }) => setUser(user))
@@ -53,6 +56,7 @@ function App() {
   return <Shell user={user} page={page} setPage={setPage} onLogout={() => setUser(null)} />;
 }
 
+//main page rendering
 function Shell({ loading = false, user, page, setPage, onLogout }) {
   if (loading) {
     return (
@@ -62,6 +66,7 @@ function Shell({ loading = false, user, page, setPage, onLogout }) {
     );
   }
 
+  //side bar
   const views = {
     home: <HomeScreen user={user} setPage={setPage} />,
     habits: <HabitsScreen />,
