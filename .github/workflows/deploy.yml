@@ -1,0 +1,124 @@
+name: Deploy to Amazon ECS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: moodtracker-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+  ECS_SERVICE_ARN: ${{ vars.ECS_SERVICE_ARN }}
+
+jobs:
+  verify:
+    name: Verify application
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+  deploy:
+    name: Build and deploy
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Configure temporary AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          role-session-name: GitHubActions-MoodTracker-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v4
+        with:
+          platforms: arm64
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build and push ARM64 image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/arm64
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:v-${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Deploy image to ECS Express Mode
+        env:
+          IMAGE_URI: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:v-${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          current_container="$(aws ecs describe-express-gateway-service \
+            --service-arn "$ECS_SERVICE_ARN" \
+            --region "$AWS_REGION" \
+            --query 'service.activeConfigurations[0].primaryContainer' \
+            --output json)"
+
+          updated_container="$(jq --arg image "$IMAGE_URI" '.image = $image' <<< "$current_container")"
+
+          aws ecs update-express-gateway-service \
+            --service-arn "$ECS_SERVICE_ARN" \
+            --primary-container "$updated_container" \
+            --monitor-resources DEPLOYMENT \
+            --monitor-mode TEXT-ONLY \
+            --region "$AWS_REGION" \
+            --no-cli-pager
+
+      - name: Verify production health
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          endpoint="$(aws ecs describe-express-gateway-service \
+            --service-arn "$ECS_SERVICE_ARN" \
+            --region "$AWS_REGION" \
+            --query 'service.activeConfigurations[0].ingressPaths[?accessType==`PUBLIC`].endpoint | [0]' \
+            --output text)"
+
+          curl --fail --show-error --silent \
+            --retry 6 \
+            --retry-delay 10 \
+            "https://${endpoint}/api/health"
