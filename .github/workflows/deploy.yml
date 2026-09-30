@@ -44,7 +44,7 @@ jobs:
     name: Build and deploy
     needs: verify
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     permissions:
       contents: read
       id-token: write
@@ -99,13 +99,79 @@ jobs:
 
           updated_container="$(jq --arg image "$IMAGE_URI" '.image = $image' <<< "$current_container")"
 
-          aws ecs update-express-gateway-service \
+          update_output="$(aws ecs update-express-gateway-service \
             --service-arn "$ECS_SERVICE_ARN" \
             --primary-container "$updated_container" \
-            --monitor-resources DEPLOYMENT \
-            --monitor-mode TEXT-ONLY \
             --region "$AWS_REGION" \
-            --no-cli-pager
+            --no-cli-pager \
+            --output json)"
+
+          target_revision_arn="$(jq -r '.service.targetConfiguration.serviceRevisionArn' <<< "$update_output")"
+
+          if [[ -z "$target_revision_arn" || "$target_revision_arn" == "null" ]]; then
+            echo "ECS did not return a target service revision ARN."
+            exit 1
+          fi
+
+          echo "Waiting for ECS deployment of ${target_revision_arn}."
+
+          deployment_arn=""
+          deployment_status=""
+          deadline=$((SECONDS + 1200))
+
+          while (( SECONDS < deadline )); do
+            if [[ -z "$deployment_arn" || "$deployment_arn" == "None" ]]; then
+              deployment_arn="$(aws ecs list-service-deployments \
+                --cluster default \
+                --service "$ECS_SERVICE_ARN" \
+                --region "$AWS_REGION" \
+                --max-results 100 \
+                --query "serviceDeployments[?targetServiceRevisionArn=='${target_revision_arn}'] | [0].serviceDeploymentArn" \
+                --output text)"
+
+              if [[ -z "$deployment_arn" || "$deployment_arn" == "None" ]]; then
+                echo "The deployment record is not available yet; checking again in 15 seconds."
+                sleep 15
+                continue
+              fi
+            fi
+
+            deployment_status="$(aws ecs describe-service-deployments \
+              --service-deployment-arns "$deployment_arn" \
+              --region "$AWS_REGION" \
+              --query 'serviceDeployments[0].status' \
+              --output text)"
+
+            echo "ECS deployment status: ${deployment_status}"
+
+            case "$deployment_status" in
+              SUCCESSFUL)
+                echo "ECS deployment completed successfully."
+                break
+                ;;
+              PENDING|IN_PROGRESS)
+                sleep 15
+                ;;
+              STOPPED|STOP_REQUESTED|ROLLBACK_REQUESTED|ROLLBACK_IN_PROGRESS|ROLLBACK_SUCCESSFUL|ROLLBACK_FAILED)
+                failure_reason="$(aws ecs describe-service-deployments \
+                  --service-deployment-arns "$deployment_arn" \
+                  --region "$AWS_REGION" \
+                  --query 'serviceDeployments[0].statusReason' \
+                  --output text)"
+                echo "ECS deployment did not succeed: ${deployment_status} — ${failure_reason}"
+                exit 1
+                ;;
+              *)
+                echo "Unexpected ECS deployment status '${deployment_status}'; checking again in 15 seconds."
+                sleep 15
+                ;;
+            esac
+          done
+
+          if [[ "$deployment_status" != "SUCCESSFUL" ]]; then
+            echo "Timed out after 20 minutes waiting for ECS deployment completion."
+            exit 1
+          fi
 
       - name: Verify production health
         shell: bash
