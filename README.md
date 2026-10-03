@@ -1,8 +1,10 @@
-# Mood Tracker
+# sameSky
 
 [![Deploy to Amazon ECS](https://github.com/albertcastillom/moodTracker/actions/workflows/deploy.yml/badge.svg)](https://github.com/albertcastillom/moodTracker/actions/workflows/deploy.yml)
 
-A production-deployed full-stack wellness application for tracking moods, private journal entries, and daily habits. Mood Tracker also presents anonymous city-level mood trends without exposing individual entries.
+> A private daily check-in with a glimpse of how your community is feeling.
+
+sameSky is a production-deployed full-stack wellness application for tracking moods, private journal entries, and daily habits. It also presents anonymous city-level mood trends without exposing individual entries.
 
 ## Features
 

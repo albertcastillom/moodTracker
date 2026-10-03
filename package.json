@@ -1,7 +1,7 @@
 {
-  "name": "moodtracker",
+  "name": "samesky",
   "version": "1.0.0",
-  "description": "A city-aware wellness mood tracker with journals and habits.",
+  "description": "A private daily check-in with a glimpse of how your community is feeling.",
   "main": "backend/server.js",
   "scripts": {
     "dev": "concurrently \"npm:dev:server\" \"npm:dev:client\"",

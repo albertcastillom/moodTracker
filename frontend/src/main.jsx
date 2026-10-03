@@ -80,7 +80,10 @@ function Shell({ loading = false, user, page, setPage, onLogout }) {
       <aside className="sidebar">
         <div>
           <p className="eyebrow">Wellness check-in</p>
-          <h1>Mood Tracker</h1>
+          <h1>sameSky</h1>
+          <p className="brand-tagline">
+            A private daily check-in with a glimpse of how your community is feeling.
+          </p>
           <p className="sidebar-date">{currentDate}</p>
         </div>
         <nav className="nav-tabs" aria-label="Primary">
@@ -132,8 +135,8 @@ function AuthScreen({ onAuthed }) {
   return (
     <main className="auth-page">
       <section className="auth-hero">
-        <p className="eyebrow">Mood Tracker</p>
-        <h1>Check in with yourself, and remember you are not alone.</h1>
+        <p className="eyebrow">sameSky</p>
+        <h1>A private daily check-in with a glimpse of how your community is feeling.</h1>
         <p>
           Track your mood, keep private journal notes, and see how your state is
           feeling in a privacy-aware way.

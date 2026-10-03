@@ -155,12 +155,18 @@ p {
 
 .sidebar-note,
 .sidebar-date,
+.brand-tagline,
 .muted,
 .soft-card p,
 .stat-card p,
 .auth-hero p {
   color: #66756d;
   line-height: 1.6;
+}
+
+.brand-tagline {
+  margin-bottom: 0;
+  font-size: 0.92rem;
 }
 
 .sidebar-date {
