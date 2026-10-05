@@ -6,6 +6,8 @@
 
 sameSky is a production-deployed full-stack wellness application for tracking moods, private journal entries, and daily habits. It also presents anonymous city-level mood trends without exposing individual entries.
 
+Project live at [https://samesky.dev](https://samesky.dev)
+
 ## Features
 
 - Email and password authentication with signed JWTs in HTTP-only cookies
@@ -47,29 +49,29 @@ The application runs as a single ARM64 container on ECS Express Mode. AWS manage
 
 ## AWS services
 
-| Service | Purpose |
-| --- | --- |
-| Amazon ECS Express Mode | Runs the container on managed Fargate capacity and performs canary deployments |
-| Amazon ECR | Stores versioned ARM64 container images |
-| Amazon RDS for PostgreSQL | Provides the managed production database, backups, and storage |
-| AWS Secrets Manager | Stores the database connection string and JWT signing secret |
-| Amazon VPC | Separates public application networking from private database networking |
-| Elastic Load Balancing | Routes HTTPS traffic and checks `/api/health` |
-| Amazon CloudWatch | Collects application logs and deployment alarms |
-| AWS IAM | Enforces least-privilege runtime and deployment access |
-| AWS Budgets and Cost Anomaly Detection | Provides spend thresholds and unexpected-cost alerts |
+| Service                                | Purpose                                                                        |
+| -------------------------------------- | ------------------------------------------------------------------------------ |
+| Amazon ECS Express Mode                | Runs the container on managed Fargate capacity and performs canary deployments |
+| Amazon ECR                             | Stores versioned ARM64 container images                                        |
+| Amazon RDS for PostgreSQL              | Provides the managed production database, backups, and storage                 |
+| AWS Secrets Manager                    | Stores the database connection string and JWT signing secret                   |
+| Amazon VPC                             | Separates public application networking from private database networking       |
+| Elastic Load Balancing                 | Routes HTTPS traffic and checks `/api/health`                                  |
+| Amazon CloudWatch                      | Collects application logs and deployment alarms                                |
+| AWS IAM                                | Enforces least-privilege runtime and deployment access                         |
+| AWS Budgets and Cost Anomaly Detection | Provides spend thresholds and unexpected-cost alerts                           |
 
 ## Technology stack
 
-| Layer | Technology |
-| --- | --- |
-| Frontend | React 19, Vite 8, CSS |
-| Backend | Node.js 22, Express 5 |
-| Authentication | bcrypt, JWT, HTTP-only cookies |
-| Database | PostgreSQL 16, Prisma 7 |
-| Containers | Docker, Docker Compose, multi-stage builds |
-| Cloud | AWS ECS, ECR, RDS, Secrets Manager, VPC, CloudWatch |
-| CI/CD | GitHub Actions, GitHub OIDC, Docker Buildx |
+| Layer          | Technology                                          |
+| -------------- | --------------------------------------------------- |
+| Frontend       | React 19, Vite 8, CSS                               |
+| Backend        | Node.js 22, Express 5                               |
+| Authentication | bcrypt, JWT, HTTP-only cookies                      |
+| Database       | PostgreSQL 16, Prisma 7                             |
+| Containers     | Docker, Docker Compose, multi-stage builds          |
+| Cloud          | AWS ECS, ECR, RDS, Secrets Manager, VPC, CloudWatch |
+| CI/CD          | GitHub Actions, GitHub OIDC, Docker Buildx          |
 
 ## Local development with Docker
 
@@ -135,13 +137,13 @@ The Express API runs at [http://localhost:3000](http://localhost:3000), and the 
 
 ## Environment variables
 
-| Variable | Required | Description |
-| --- | --- | --- |
-| `DATABASE_URL` | Yes | PostgreSQL connection string used by Prisma |
-| `JWT_SECRET` | Yes in production | Secret used to sign and verify authentication tokens |
-| `NODE_ENV` | Yes in production | Enables static frontend serving and production cookie settings |
-| `CLIENT_ORIGIN` | Development only | Allowed Vite origin; defaults to `http://localhost:5173` |
-| `PORT` | No | Express port; defaults to `3000` |
+| Variable        | Required          | Description                                                    |
+| --------------- | ----------------- | -------------------------------------------------------------- |
+| `DATABASE_URL`  | Yes               | PostgreSQL connection string used by Prisma                    |
+| `JWT_SECRET`    | Yes in production | Secret used to sign and verify authentication tokens           |
+| `NODE_ENV`      | Yes in production | Enables static frontend serving and production cookie settings |
+| `CLIENT_ORIGIN` | Development only  | Allowed Vite origin; defaults to `http://localhost:5173`       |
+| `PORT`          | No                | Express port; defaults to `3000`                               |
 
 Production values are injected from AWS Secrets Manager when an ECS task starts. They are never stored in the image or GitHub repository.
 
@@ -194,15 +196,15 @@ No long-lived AWS access keys are stored in GitHub. The IAM trust policy permits
 
 ## Available scripts
 
-| Command | Description |
-| --- | --- |
-| `npm run dev` | Run the Vite and Express development servers |
-| `npm run build` | Build the production frontend |
-| `npm start` | Start the Express production server |
-| `npm test` | Run the current build verification |
-| `npm run db:dev` | Create and apply a development migration |
-| `npm run db:migrate` | Apply committed migrations in production |
-| `npm run db:seed` | Seed the database with development data |
+| Command              | Description                                  |
+| -------------------- | -------------------------------------------- |
+| `npm run dev`        | Run the Vite and Express development servers |
+| `npm run build`      | Build the production frontend                |
+| `npm start`          | Start the Express production server          |
+| `npm test`           | Run the current build verification           |
+| `npm run db:dev`     | Create and apply a development migration     |
+| `npm run db:migrate` | Apply committed migrations in production     |
+| `npm run db:seed`    | Seed the database with development data      |
 
 ## Planned improvements
 
